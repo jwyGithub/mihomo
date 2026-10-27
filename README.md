@@ -1,8 +1,6 @@
 # mihomo 多端口订阅服务镜像
 
 [![Build and Push Docker Image](https://img.shields.io/github/actions/workflow/status/jwygithub/mihomo/docker-publish.yml?style=flat-square&logo=githubactions&logoColor=white&label=build)](https://github.com/jwygithub/mihomo/actions/workflows/docker-publish.yml)
-[![GitHub stars](https://img.shields.io/github/stars/jwygithub/mihomo?style=flat-square&logo=github)](https://github.com/jwygithub/mihomo/stargazers)
-[![GitHub forks](https://img.shields.io/github/forks/jwygithub/mihomo?style=flat-square&logo=github)](https://github.com/jwygithub/mihomo/network/members)
 [![mihomo](https://img.shields.io/badge/mihomo-v1.19.33-1f6feb?style=flat-square)](https://github.com/MetaCubeX/mihomo/releases/tag/v1.19.33)
 [![Docker image](https://img.shields.io/badge/ghcr.io-jwygithub%2Fmihomo-2496ED?style=flat-square&logo=docker&logoColor=white)](https://github.com/jwygithub/mihomo/pkgs/container/mihomo)
 [![Platforms](https://img.shields.io/badge/platform-amd64%20%7C%20arm64-success?style=flat-square)](https://github.com/jwygithub/mihomo/pkgs/container/mihomo)
