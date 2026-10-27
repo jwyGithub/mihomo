@@ -6,6 +6,13 @@ services:
         environment:
             # 时区，影响 cron 定时更新的触发时间
             - TZ=Asia/Shanghai
+            # GeoIP/GeoSite 数据库定时更新（可选，不设置则保持纯离线、仅用镜像内置库）
+            # 每周日 5:00 更新一次：
+            - GEO_UPDATE_CRON=0 5 * * 0
+            # 每月 1 号 5:00 更新一次（二选一）：
+            # - GEO_UPDATE_CRON=0 5 1 * *
+            # 可选：自定义下载源（CN 环境可改用镜像/CDN 加速）
+            # - GEO_BASE=https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release
         volumes:
             # 配置文件
             - ./subs.yaml:/data/subs.yaml

@@ -63,6 +63,12 @@ yq '.[].name' "$SUBS_FILE" | while read -r name; do
     dir="${RUN_DIR}/${name}"
     mkdir -p "$dir"
 
+    # 预置镜像内置的 GeoIP/GeoSite 数据库到实例工作目录，
+    # 避免 mihomo 运行时联网下载（下载超时会导致 fatal 崩溃）。
+    if [ -d /opt/geo ]; then
+        cp -f /opt/geo/* "$dir"/ 2>/dev/null || true
+    fi
+
     echo "[entrypoint] 准备实例 ${name}  (port=${port} socks=$((port + 1)) controller=$((port + 2)))"
 
     # 首次下载并生成配置（init 模式：此时 supervisord 尚未启动，不触发重启）
@@ -89,6 +95,16 @@ EOF
         echo "[entrypoint] 已登记定时任务 ${name}: ${cron}"
     fi
 done
+
+# ---- GeoIP/GeoSite 数据库定时更新（可选）----
+# 设置环境变量 GEO_UPDATE_CRON 即启用，例如：
+#   每周一次：  GEO_UPDATE_CRON="0 5 * * 0"   (每周日 5:00)
+#   每月一次：  GEO_UPDATE_CRON="0 5 1 * *"   (每月 1 号 5:00)
+# 不设置则保持纯离线（仅用镜像内置库）。
+if [ -n "${GEO_UPDATE_CRON:-}" ]; then
+    echo "${GEO_UPDATE_CRON} /usr/local/bin/update-geo.sh >> ${LOG_DIR}/geo.update.log 2>&1" >> "$CRONTAB_FILE"
+    echo "[entrypoint] 已登记 GeoIP/GeoSite 定时更新: ${GEO_UPDATE_CRON}"
+fi
 
 echo "[entrypoint] 启动 supervisord（管理所有 mihomo 实例 + crond）"
 exec supervisord -c "$SUP_CONF"

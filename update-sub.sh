@@ -71,11 +71,22 @@ if [ "$download_ok" -ne 1 ]; then
     exit 1
 fi
 
-# 改写三个关键端口字段（字段不存在时 yq 会自动创建）
+# 规整配置：
+#   - port / socks-port(+1) / external-controller(+2)：按约定改写（字段不存在时 yq 自动创建）
+#   - mixed-port / redir-port / tproxy-port：置 0 关闭，避免多实例抢占同一监听端口
+#   - dns.listen：置空，避免多实例都抢 0.0.0.0:53（保留 DNS 解析能力，仅不监听端口）
+#   - tun.enable：关闭，多实例共存且无需 tun
+#   - geo-auto-update：关闭，GeoIP/GeoSite 已内置，杜绝运行时联网下载导致的崩溃
 yq -i "
     .port = ${port} |
     .\"socks-port\" = ${socks} |
-    .\"external-controller\" = \"0.0.0.0:${ctrl}\"
+    .\"mixed-port\" = 0 |
+    .\"redir-port\" = 0 |
+    .\"tproxy-port\" = 0 |
+    .\"external-controller\" = \"0.0.0.0:${ctrl}\" |
+    .\"geo-auto-update\" = false |
+    .dns.listen = \"\" |
+    .tun.enable = false
 " "$tmp"
 
 mv "$tmp" "${dir}/config.yaml"

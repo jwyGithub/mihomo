@@ -48,9 +48,24 @@ RUN set -eux; \
     rm -f /tmp/mihomo.gz; \
     /usr/local/bin/mihomo -v
 
+# 预置 GeoIP / GeoSite 数据库到镜像，启动时再拷进各实例工作目录。
+# 这样 mihomo 解析 GEOIP/GEOSITE 规则时直接从本地加载，
+# 不会在运行时联网下载（下载超时会导致 fatal 崩溃重启）。
+ARG GEO_BASE=https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest
+RUN set -eux; \
+    mkdir -p /opt/geo; \
+    curl -fsSL -o /opt/geo/geoip.metadb "${GEO_BASE}/geoip.metadb"; \
+    curl -fsSL -o /opt/geo/geosite.dat  "${GEO_BASE}/geosite.dat"; \
+    curl -fsSL -o /opt/geo/geoip.dat    "${GEO_BASE}/geoip.dat" || true; \
+    curl -fsSL -o /opt/geo/country.mmdb "${GEO_BASE}/country.mmdb" || true; \
+    curl -fsSL -o /opt/geo/GeoLite2-ASN.mmdb \
+        "https://github.com/xishang0128/geoip/releases/download/latest/GeoLite2-ASN.mmdb" || true; \
+    ls -la /opt/geo
+
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 COPY update-sub.sh /usr/local/bin/update-sub.sh
-RUN chmod +x /usr/local/bin/entrypoint.sh /usr/local/bin/update-sub.sh
+COPY update-geo.sh /usr/local/bin/update-geo.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh /usr/local/bin/update-sub.sh /usr/local/bin/update-geo.sh
 
 WORKDIR /data
 
