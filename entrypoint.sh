@@ -39,7 +39,7 @@ file=/run/supervisor.sock
 serverurl=unix:///run/supervisor.sock
 
 [rpcinterface:supervisor]
-supervisor.rpcinterface_factory = supervisor.rpcinterface.make_main_rpcinterface
+supervisor.rpcinterface_factory = supervisor.rpcinterface:make_main_rpcinterface
 
 [program:crond]
 command=crond -f -d 8 -c /etc/crontabs
