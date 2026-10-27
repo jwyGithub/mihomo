@@ -1,0 +1,19 @@
+# 多端口订阅服务配置
+#   name : 实例名（同时作为运行目录与日志文件名，需唯一且文件名安全）
+#   sub  : 订阅地址（返回 clash/mihomo 格式配置）
+#   port : HTTP 代理端口；socks-port 自动 = port+1；external-controller 自动 = port+2
+#   cron : 定时更新订阅的 cron 表达式（容器时区由 TZ 决定，默认 Asia/Shanghai）
+#
+# 注意：同一容器内每个实例占用 3 个端口 [port, port+1, port+2]，各 sub 的端口区间不能重叠。
+
+- name: sub-01
+  sub: https://example.com/sub01?token=1234567890&clash
+  port: 7290
+  # 每天早上8点更新订阅
+  cron: 0 8 * * *
+
+- name: sub-02
+  sub: https://example.com/sub02?token=1234567890&clash
+  port: 7291
+  # 每天早上8点更新订阅
+  cron: 0 8 * * *

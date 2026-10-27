@@ -1,0 +1,30 @@
+services:
+    mihomo:
+        image: ghcr.io/jwygithub/mihomo:latest
+        container_name: mihomo
+        restart: unless-stopped
+        environment:
+            # 时区，影响 cron 定时更新的触发时间
+            - TZ=Asia/Shanghai
+        volumes:
+            # 配置文件
+            - ./subs.yaml:/data/subs.yaml
+            # 可选：持久化各实例运行目录（含 geo 数据库缓存，避免每次重启重新下载）
+            # - ./data/run:/data/run
+            # 可选：持久化日志（每个 sub 独立日志文件）
+            # - ./data/logs:/data/logs
+        ports:
+            # 端口规则：每个 sub 占用 port / port+1(socks) / port+2(controller)
+            # sub-jawyn (port=7290)
+            - '7290:7290' # http
+            - '7291:7291' # socks（按需）
+            # - '7292:7292' # external-controller / 面板 API（按需）
+            # sub-public (port=7390)
+            - '7390:7390' # http
+            - '7391:7391' # socks（按需）
+            # - '7392:7392' # external-controller / 面板 API（按需）
+        logging:
+            driver: json-file
+            options:
+                max-size: '10m'
+                max-file: '3'

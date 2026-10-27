@@ -1,0 +1,11 @@
+# 构建镜像时不需要的文件（只需要脚本进镜像）
+subs.yaml
+sub-*.yml
+sub-*.yaml
+docker-compose.yml
+README.md
+.git
+.gitignore
+*.log
+data/
+run/
