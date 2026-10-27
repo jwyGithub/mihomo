@@ -1,0 +1,53 @@
+# 带内联 override 的订阅配置示例（单实例）
+# 复制内容到 subs.yaml 使用。每个列表项 = 一个独立的 mihomo 实例。
+#
+# 端口规则（由容器自动改写，无需在订阅里手动配置）：
+#   http = port    socks = port+1    external-controller = 0.0.0.0:(port+2)
+# 各实例的 port 之间至少相差 3，避免端口段重叠；name 必须唯一（用作运行目录/日志名/取值键）。
+
+# —— 带内联 override 的实例 ——
+- name: sub-advanced
+  sub: http://your-airport/subscribe?token=yyyy
+  port: 7390
+  cron: 0 8 * * *
+  # 可选：单独为该实例的 external-controller / 面板设置访问密钥
+  # （不设则回退到环境变量 CONTROLLER_SECRET；都不设则不启用密钥）
+  secret: change-me
+
+  # ==== 内联 override：订阅更新后自动合并，自定义内容不会被订阅覆盖 ====
+  # 合并规则：
+  #   prepend-rules            规则置顶（优先于订阅规则匹配）
+  #   append-rules             规则置底（兜底，通常放 MATCH）
+  #   prepend-proxies          追加自定义节点（置于订阅节点之前）
+  #   append-proxies           追加自定义节点（置于订阅节点之后）
+  #   prepend-proxy-groups     追加自定义策略组（之前）
+  #   append-proxy-groups      追加自定义策略组（之后）
+  #   其余顶层键（hosts/dns/mode/...）  深合并覆盖订阅同名设置（override 最优先）
+  #
+  # ⚠️ 注意：
+  #   1) 不要同时用 prepend-rules/append-rules 和顶层 rules:（后者会整表替换）。
+  #   2) 深合并里「数组是整体替换，不是追加」。例如下面的 dns.fake-ip-filter
+  #      会替换掉默认模板的那份，要保留模板条目请一并写全。
+  override:
+    # 置顶自定义规则（示例：内网域名直连、广告域名拒绝）
+    prepend-rules:
+      - 'DOMAIN-SUFFIX,internal.example.com,DIRECT'
+      - 'DOMAIN-KEYWORD,ads,REJECT'
+    # 置底兜底规则（一般订阅已自带 MATCH，按需启用）
+    append-rules: []
+    # 追加自定义节点 / 策略组（按需）
+    append-proxies: []
+    append-proxy-groups: []
+    # 强制 rule 模式
+    mode: rule
+    # 静态 hosts（顶层键，域名 -> 真实 IP，支持 *.x / +.x 通配）
+    hosts:
+      '*.dlife.cn': 140.246.46.164
+      admin-aibp.tech.ctseelink.cn: 117.80.117.48
+    # 覆盖 / 补充 DNS（叠加在默认模板与订阅 DNS 之上，override 最优先）。
+    # 若启用了 fake-ip 默认模板（DNS_TEMPLATE=on），想让上面的 hosts 返回真实 IP，
+    # 必须把这些域名加进 fake-ip-filter 排除掉 fake-ip。
+    dns:
+      fake-ip-filter:
+        - '*.dlife.cn'
+        - '+.ctseelink.cn'

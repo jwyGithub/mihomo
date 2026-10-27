@@ -13,10 +13,17 @@ services:
             # - GEO_UPDATE_CRON=0 5 1 * *
             # 可选：自定义下载源（CN 环境可改用镜像/CDN 加速）
             # - GEO_BASE=https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release
+            # external-controller / 面板 API 的访问密钥（对所有实例生效；
+            # 也可在 subs.yaml 为单个 sub 单独设置 secret 覆盖此值）
+            # - CONTROLLER_SECRET=change-me-please
+            # DNS/fake-ip 默认模板：off(默认) 完全沿用订阅自带 DNS；on 注入离线 fake-ip DNS 模板
+            # - DNS_TEMPLATE=on
+            # 极端情况下 mihomo -t 误报时可临时跳过「应用前配置校验」（不建议长期开启）
+            # - SKIP_CONFIG_TEST=1
         volumes:
-            # 配置文件
+            # 配置文件（每个 sub 的自定义 override 直接内联在 subs.yaml 的 override: 块里）
             - ./subs.yaml:/data/subs.yaml
-            # 可选：持久化各实例运行目录（含 geo 数据库缓存，避免每次重启重新下载）
+            # 可选：持久化各实例运行目录（含 geo 缓存 + 节点选择/fake-ip 持久化状态）
             # - ./data/run:/data/run
             # 可选：持久化日志（每个 sub 独立日志文件）
             # - ./data/logs:/data/logs

@@ -8,8 +8,18 @@ LOG_DIR=/data/logs
 SUP_CONF=/etc/supervisor/supervisord.conf
 CRONTAB_DIR=/etc/crontabs
 CRONTAB_FILE="${CRONTAB_DIR}/root"
+DNS_TEMPLATE_FILE="${DNS_TEMPLATE_FILE:-/opt/templates/dns.yaml}"
 
 mkdir -p "$RUN_DIR" "$LOG_DIR" /etc/supervisor "$CRONTAB_DIR" /run
+
+# ---- 默认 DNS / Fake-IP 模板（feature 7）----
+# 模板已随镜像内置（templates/dns.yaml -> /opt/templates/dns.yaml），不再运行时生成。
+# update-sub.sh 会把它作为「基底」合并进订阅（订阅自带 dns 优先，模板仅补齐缺失项）；
+# 自定义：修改项目内 templates/dns.yaml 重新 build，或挂载替换 / 用 DNS_TEMPLATE_FILE 指向其它路径；
+# 默认关闭（沿用订阅自带 DNS），设置 DNS_TEMPLATE=on 启用模板合并。
+if [ "${DNS_TEMPLATE:-off}" != "off" ] && [ ! -f "$DNS_TEMPLATE_FILE" ]; then
+    echo "[entrypoint] 警告：未找到 DNS 模板 ${DNS_TEMPLATE_FILE}，将跳过模板合并" >&2
+fi
 
 # ---- 时区（cron 定时依赖）----
 if [ -n "${TZ:-}" ] && [ -f "/usr/share/zoneinfo/${TZ}" ]; then

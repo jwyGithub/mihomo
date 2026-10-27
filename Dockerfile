@@ -62,6 +62,9 @@ RUN set -eux; \
         "https://github.com/xishang0128/geoip/releases/download/latest/GeoLite2-ASN.mmdb" || true; \
     ls -la /opt/geo
 
+# 默认 DNS / fake-ip 模板（随镜像内置；可在运行时挂载替换或用 DNS_TEMPLATE_FILE 指向其它路径）
+COPY templates/dns.yaml /opt/templates/dns.yaml
+
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 COPY update-sub.sh /usr/local/bin/update-sub.sh
 COPY update-geo.sh /usr/local/bin/update-geo.sh

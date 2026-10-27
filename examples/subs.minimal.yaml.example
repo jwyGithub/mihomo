@@ -1,0 +1,13 @@
+# 最简订阅配置示例（单实例）
+# 复制内容到 subs.yaml 使用。每个列表项 = 一个独立的 mihomo 实例。
+#
+# 端口规则（由容器自动改写，无需在订阅里手动配置）：
+#   http = port    socks = port+1    external-controller = 0.0.0.0:(port+2)
+# 各实例的 port 之间至少相差 3，避免端口段重叠；name 必须唯一（用作运行目录/日志名/取值键）。
+
+# —— 最简实例：只需 name / sub / port（cron 可选）——
+- name: sub-basic
+  sub: http://your-airport/subscribe?token=xxxx   # 订阅地址（返回 clash / clash.meta 格式）
+  port: 7290
+  # 定时更新（cron 表达式，容器时区由 TZ 决定）；不写则不自动更新
+  cron: 0 8 * * *            # 每天 08:00 更新
