@@ -1,5 +1,13 @@
 # mihomo 多端口订阅服务镜像
 
+[![Build and Push Docker Image](https://img.shields.io/github/actions/workflow/status/jwygithub/mihomo/docker-publish.yml?style=flat-square&logo=githubactions&logoColor=white&label=build)](https://github.com/jwygithub/mihomo/actions/workflows/docker-publish.yml)
+[![GitHub stars](https://img.shields.io/github/stars/jwygithub/mihomo?style=flat-square&logo=github)](https://github.com/jwygithub/mihomo/stargazers)
+[![GitHub forks](https://img.shields.io/github/forks/jwygithub/mihomo?style=flat-square&logo=github)](https://github.com/jwygithub/mihomo/network/members)
+[![mihomo](https://img.shields.io/badge/mihomo-v1.19.33-1f6feb?style=flat-square)](https://github.com/MetaCubeX/mihomo/releases/tag/v1.19.33)
+[![Docker image](https://img.shields.io/badge/ghcr.io-jwygithub%2Fmihomo-2496ED?style=flat-square&logo=docker&logoColor=white)](https://github.com/jwygithub/mihomo/pkgs/container/mihomo)
+[![Platforms](https://img.shields.io/badge/platform-amd64%20%7C%20arm64-success?style=flat-square)](https://github.com/jwygithub/mihomo/pkgs/container/mihomo)
+[![Base](https://img.shields.io/badge/base-Alpine%203.20-0D597F?style=flat-square&logo=alpinelinux&logoColor=white)](https://hub.docker.com/_/alpine)
+
 基于 [mihomo](https://github.com/MetaCubeX/mihomo) 内核，在**同一个容器内**用**一个** mihomo 二进制拉起**多个**实例，每个实例对应一条订阅、监听各自端口、按 cron 定时更新订阅并自动应用。
 
 - **单二进制多实例**：按目标架构只内置一个 mihomo 二进制，由 supervisor 托管多个实例并保活。
