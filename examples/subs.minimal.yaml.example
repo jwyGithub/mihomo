@@ -9,5 +9,7 @@
 - name: sub-basic
   sub: http://your-airport/subscribe?token=xxxx   # 订阅地址（返回 clash / clash.meta 格式）
   port: 7290
+  # 可选：该实例的 DNS 模板开关（on/off）；优先于全局 DNS_TEMPLATE，未设置时沿用全局值
+  # dns-template: on
   # 定时更新（cron 表达式，容器时区由 TZ 决定）；不写则不自动更新
   cron: 0 8 * * *            # 每天 08:00 更新

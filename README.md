@@ -124,12 +124,13 @@ docker compose up -d
 默认关闭（`DNS_TEMPLATE=off`），完全沿用订阅自带 DNS。设 `DNS_TEMPLATE=on` 时注入一份离线友好的 fake-ip DNS 模板（含 `fake-ip-filter`、按 `geosite:cn,private` 分流解析）。
 
 - 启用模板：设 `DNS_TEMPLATE=on`（默认 `off`，完全沿用订阅自带 DNS）。
+- 单独启用或禁用：在对应订阅项设置 `dns-template: on` 或 `dns-template: off`，其优先级高于全局 `DNS_TEMPLATE`；未设置时继承全局值。
 - 模板随镜像内置：源文件为项目内 `templates/dns.yaml`，构建时 `COPY` 到镜像的 `/opt/templates/dns.yaml`。
 - 自定义模板：修改项目内 `templates/dns.yaml` 后重新 build，或运行时挂载替换 `/opt/templates/dns.yaml`，或用 `DNS_TEMPLATE_FILE` 指向其它路径。
 
 #### DNS 合并优先级
 
-当「DNS 模板（`DNS_TEMPLATE=on`）」「订阅自带 `dns`」「override 里的 `dns`」同时存在时，优先级（高 → 低）为：
+是否注入默认 DNS 模板先按「订阅项 `dns-template` > 全局 `DNS_TEMPLATE`」决定；模板启用后，「override 里的 `dns`」「订阅自带 `dns`」「DNS 模板」同时存在时的优先级（高 → 低）为：
 
 ```
 归一化强制项  >  override.dns  >  订阅自带 dns  >  DNS 模板

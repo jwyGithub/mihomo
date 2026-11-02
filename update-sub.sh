@@ -38,6 +38,14 @@ port=$(yq ".[] | select(.name == \"${NAME}\") | .port" "$SUBS_FILE" | head -n1)
 secret_val=$(yq ".[] | select(.name == \"${NAME}\") | .secret // \"\"" "$SUBS_FILE" | head -n1)
 [ "$secret_val" = "null" ] && secret_val=""
 [ -z "$secret_val" ] && secret_val="${CONTROLLER_SECRET:-}"
+# 每实例 DNS 模板开关：优先 subs.yaml 的 .dns-template，其次环境变量 DNS_TEMPLATE
+sub_dns_template=$(yq ".[] | select(.name == \"${NAME}\") | .[\"dns-template\"] // \"\"" "$SUBS_FILE" | head -n1)
+if [ -n "$sub_dns_template" ] && [ "$sub_dns_template" != "null" ]; then
+    case "$sub_dns_template" in
+        on|off) DNS_TEMPLATE="$sub_dns_template" ;;
+        *) echo "[update] ${NAME}: dns-template 仅支持 on/off，当前值：${sub_dns_template}" >&2; exit 1 ;;
+    esac
+fi
 
 if [ -z "$sub" ] || [ "$sub" = "null" ]; then
     echo "[update] ${NAME}: 未找到 sub 订阅地址" >&2

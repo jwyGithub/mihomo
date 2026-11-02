@@ -16,7 +16,7 @@ services:
             # external-controller / 面板 API 的访问密钥（对所有实例生效；
             # 也可在 subs.yaml 为单个 sub 单独设置 secret 覆盖此值）
             # - CONTROLLER_SECRET=change-me-please
-            # DNS/fake-ip 默认模板：off(默认) 完全沿用订阅自带 DNS；on 注入离线 fake-ip DNS 模板
+            # DNS/fake-ip 默认模板全局默认值：off(默认)；可被 subs.yaml 单个订阅的 dns-template: on/off 覆盖
             # - DNS_TEMPLATE=on
             # 极端情况下 mihomo -t 误报时可临时跳过「应用前配置校验」（不建议长期开启）
             # - SKIP_CONFIG_TEST=1
