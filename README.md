@@ -103,10 +103,10 @@ docker compose up -d
     prepend-rules:
       - 'DOMAIN-SUFFIX,internal.example.com,DIRECT'
     hosts:
-      '*.dlife.cn': 140.246.46.164
+      '*.example.host': 192.0.0.1
     dns:
       fake-ip-filter:
-        - '*.dlife.cn'
+        - '*.example.host'
 ```
 
 | override 键 | 作用 |
@@ -148,7 +148,7 @@ docker compose up -d
 所以同名 DNS 键最终取值：有 override 用 override，否则用订阅，再否则用模板；非冲突的键三方累加（深合并取并集）。
 
 > ⚠️ 两个关键点：
-> - **数组是整体替换，不是追加**：深合并里映射逐键递归，但数组字段由最高优先级的那一方整体替换。例如 override 写了 `dns.fake-ip-filter: [*.dlife.cn]`，就会把模板的 `[*.lan, *.local]` **整份顶掉**；要保留模板条目必须一并写全（`nameserver` 等数组同理）。
+> - **数组是整体替换，不是追加**：深合并里映射逐键递归，但数组字段由最高优先级的那一方整体替换。例如 override 写了 `dns.fake-ip-filter: [*.example.host]`，就会把模板的 `[*.lan, *.local]` **整份顶掉**；要保留模板条目必须一并写全（`nameserver` 等数组同理）。
 > - **`dns.listen` 永远被清空**：为避免多实例争抢 `0.0.0.0:53`，归一化阶段无条件执行 `.dns.listen = ""`，无论模板/订阅/override 怎么写都无效（fake-ip 仍在实例内部正常工作）。
 
 示例（`DNS_TEMPLATE=on`，订阅与 override 均含 `dns`）：
@@ -157,7 +157,7 @@ docker compose up -d
 | --- | --- | --- | --- | --- | --- |
 | `enhanced-mode` | `fake-ip` | — | — | `fake-ip` | 仅模板有，补齐 |
 | `nameserver` | `[223.5.5.5]` | `[8.8.8.8]` | — | `[8.8.8.8]` | 订阅赢（数组替换） |
-| `fake-ip-filter` | `[*.lan, *.local]` | — | `[*.dlife.cn]` | `[*.dlife.cn]` | override 赢（数组替换，模板那份丢失） |
+| `fake-ip-filter` | `[*.lan, *.local]` | — | `[*.example.host]` | `[*.example.host]` | override 赢（数组替换，模板那份丢失） |
 | `listen` | 任意 | 任意 | 任意 | `""` | 归一化强制清空 |
 
 ## 日志
